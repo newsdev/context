@@ -1,4 +1,4 @@
-package crypto
+package std
 
 import (
 	"bytes"
@@ -7,10 +7,8 @@ import (
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha512"
-	"encoding/base64"
 	"fmt"
 	"io"
-	"os"
 )
 
 const (
@@ -22,85 +20,49 @@ const (
 	// HmacKeyLength is the length in bytes of the key used in the HMAC
 	// SHA-512 algorithm
 	HmacKeyLength = 128
-
-	// HmacOutputLength is the length in bytes of the sum produced by the HMAC
-	// SHA-512 algorithm.
-	HmacOutputLength = 64
 )
 
-// A Crypter is an enCrypter/deCrypter set to use a specific encryption key (for
+// A stdCrypter is an enstdCrypter/destdCrypter set to use a specific encryption key (for
 // AES-256 in CBC mode) and signing key (for HMAC SHA-512) combination.
-type Crypter struct {
-	hmacKey, symetricKey []byte
-	block                cipher.Block
+type stdCrypter struct {
+	block   cipher.Block
+	hmacKey []byte
 }
 
-// New creates and returns a new Crypter. Keys are obtained by reading from
-// the provided reader.
-func NewCrypter(key io.Reader) (*Crypter, error) {
+func New(cipherKey, hmacKey []byte) (*stdCrypter, error) {
 
-	// Create a new Crypter object.
-	Crypter := &Crypter{}
-
-	// Set the hmac key.
-	Crypter.hmacKey = make([]byte, HmacKeyLength)
-	if _, err := io.ReadFull(key, Crypter.hmacKey); err != nil {
-		return Crypter, err
+	// Confirm that there are enough bytes in the cipher key to select AES-256
+	// and no more.
+	if len(cipherKey) != SymetricKeyLength {
+		return nil, stdCrypterError{"cipher key has the wrong length for AES-256 (32 bytes)"}
 	}
 
-	// Set the symetric key.
-	Crypter.symetricKey = make([]byte, SymetricKeyLength)
-	if _, err := io.ReadFull(key, Crypter.symetricKey); err != nil {
-		return Crypter, err
-	}
-
-	// Try to create a cipher from the symetric key.
-	block, err := aes.NewCipher(Crypter.symetricKey)
-	if err != nil {
-		return Crypter, err
-	}
-
-	// Set the block.
-	Crypter.block = block
-
-	return Crypter, nil
-}
-
-func NewRandomCrypter() (*Crypter, error) {
-	return NewCrypter(rand.Reader)
-}
-
-func NewCrypterFromFile(filepath string) (*Crypter, error) {
-
-	// Check the status of the secret file.
-	stat, err := os.Stat(filepath)
+	// Create the block from the cipher key. An important assumption we are
+	// making is that the resulting block does not contain references to the
+	// original, mutable cipher key.
+	b, err := aes.NewCipher(cipherKey)
 	if err != nil {
 		return nil, err
 	}
 
-	// Only proceed if the running user is the only user that can read the
-	// secret.
-	if mode := stat.Mode(); mode != 0600 && mode != 0400 {
-		return nil, CrypterError{"incorrect file mode for key"}
+	// Confirm that there are enough bytes in the HMAC key to use it with the
+	// SHA-512 algorithm without resorting to padding.
+	if len(hmacKey) != HmacKeyLength {
+		return nil, stdCrypterError{"HMAC key has the wrong length for SHA-512 (128 bytes)"}
 	}
 
-	// Attempt to read the entire content of the secret file.
-	file, err := os.Open(filepath)
-	if err != nil {
-		return nil, err
-	}
+	// Copy the HMAC key to insure immutability of the stdCrypter.
+	h := make([]byte, 128)
+	copy(h, hmacKey)
 
-	// Defer the closing of the file, ignoring any error.
-	defer file.Close()
-
-	// Create a new decoder.
-	decoder := base64.NewDecoder(base64.StdEncoding, file)
-
-	return NewCrypter(decoder)
+	return &stdCrypter{
+		block:   b,
+		hmacKey: h,
+	}, nil
 }
 
 // hmac computes and returns SHA-512 Hmac sum using the signing key.
-func (c *Crypter) hmac(message []byte) []byte {
+func (c *stdCrypter) hmac(message []byte) []byte {
 	signer := hmac.New(sha512.New, c.hmacKey)
 	signer.Write(message)
 	return signer.Sum(nil)
@@ -108,7 +70,7 @@ func (c *Crypter) hmac(message []byte) []byte {
 
 // encrypt encrypts a slice of bytes using the AES-256 cipher in CBC mode and
 // returns an usigned sice of cipher bytes that begins with the IV.
-func (c *Crypter) encrypt(plainbytes []byte) ([]byte, error) {
+func (c *stdCrypter) encrypt(plainbytes []byte) ([]byte, error) {
 
 	// Initialize size with room for the IV.
 	size := aes.BlockSize + len(plainbytes)
@@ -128,7 +90,7 @@ func (c *Crypter) encrypt(plainbytes []byte) ([]byte, error) {
 		return []byte{}, err
 	}
 
-	// Create the enCrypter and crypt the plainbytes in place.
+	// Create the enstdCrypter and crypt the plainbytes in place.
 	mode := cipher.NewCBCEncrypter(c.block, iv)
 	mode.CryptBlocks(cipherbytes[aes.BlockSize:], cipherbytes[aes.BlockSize:])
 
@@ -139,16 +101,16 @@ func (c *Crypter) encrypt(plainbytes []byte) ([]byte, error) {
 // mode and returns a slice of plain bytes. The first Block of the cipherbytes
 // argument is expected to be the IV. It does not verify or expect a signature
 // to be present in the cipherbytes argument.
-func (c *Crypter) decrypt(cipherbytes []byte) ([]byte, error) {
+func (c *stdCrypter) decrypt(cipherbytes []byte) ([]byte, error) {
 
 	// We need an IV and at least one Block of cipherbytes to proceed.
 	if len(cipherbytes) < aes.BlockSize*2 {
-		return []byte{}, CrypterError{"cipherbytes is too short"}
+		return []byte{}, stdCrypterError{"cipherbytes is too short"}
 	}
 
 	// CBC mode always works in whole Blocks.
 	if len(cipherbytes)%aes.BlockSize != 0 {
-		return []byte{}, CrypterError{"cipherbytes is not a multiple of the block size"}
+		return []byte{}, stdCrypterError{"cipherbytes is not a multiple of the block size"}
 	}
 
 	// IV is the first BlockSize bytes of the message.
@@ -165,9 +127,9 @@ func (c *Crypter) decrypt(cipherbytes []byte) ([]byte, error) {
 	return plainbytes, nil
 }
 
-// Encrypt converts plainbytes to signed cipherbytes by encrypting the
+// EncryptAndSign converts plainbytes to signed cipherbytes by encrypting the
 // plainbytes using AES-256 and prepending a Hmac SHA-512 signature.
-func (c *Crypter) Encrypt(plainbytes []byte) ([]byte, error) {
+func (c *stdCrypter) EncryptAndSign(plainbytes []byte) ([]byte, error) {
 
 	// Encrypt the slice of plainbytes, producing cipherbytes.
 	cipherbytes, err := c.encrypt(plainbytes)
@@ -179,7 +141,7 @@ func (c *Crypter) Encrypt(plainbytes []byte) ([]byte, error) {
 	hmacbytes := c.hmac(cipherbytes)
 
 	// Copy all the bytes into a single byte string.
-	messagebytes := make([]byte, HmacOutputLength+len(cipherbytes))
+	messagebytes := make([]byte, sha512.Size+len(cipherbytes))
 	copy(messagebytes[:len(hmacbytes)], hmacbytes)
 	copy(messagebytes[len(hmacbytes):], cipherbytes)
 
@@ -189,16 +151,16 @@ func (c *Crypter) Encrypt(plainbytes []byte) ([]byte, error) {
 // Decrypt converts signed slice of cipherbytes to plainbytes by first
 // validating a prepended Hmac SHA-512 signature and then decrypting the
 // remaining message using AES-256.
-func (c *Crypter) Decrypt(messagebytes []byte) ([]byte, error) {
+func (c *stdCrypter) ValidateAndDecrypt(messagebytes []byte) ([]byte, error) {
 
 	// Check that message bytes is long enough.
 	if len(messagebytes) < 64 {
-		return nil, CrypterError{"message signature is too short"}
+		return nil, stdCrypterError{"message signature is too short"}
 	}
 
 	// Check the signature.
 	if hmac.Equal(messagebytes[:64], c.hmac(messagebytes[64:])) != true {
-		return nil, CrypterError{"invalid signature"}
+		return nil, stdCrypterError{"invalid signature"}
 	}
 
 	// Decode the encrypted bytes.
@@ -210,11 +172,11 @@ func (c *Crypter) Decrypt(messagebytes []byte) ([]byte, error) {
 	return plainbytes, nil
 }
 
-// CrypterError represents a run-time error in a Crypter method.
-type CrypterError struct {
+// stdCrypterError represents a run-time error in a stdCrypter method.
+type stdCrypterError struct {
 	Err string
 }
 
-func (e CrypterError) Error() string {
+func (e stdCrypterError) Error() string {
 	return fmt.Sprintf("crypter: %s", e.Err)
 }
