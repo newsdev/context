@@ -61,7 +61,7 @@ func New(cipherKey, hmacKey []byte) (*stdCrypter, error) {
 	}, nil
 }
 
-// hmac computes and returns SHA-512 Hmac sum using the signing key.
+// hmac computes and returns SHA-512 HMAC sum using the signing key.
 func (c *stdCrypter) hmac(message []byte) []byte {
 	signer := hmac.New(sha512.New, c.hmacKey)
 	signer.Write(message)
@@ -178,5 +178,5 @@ type stdCrypterError struct {
 }
 
 func (e stdCrypterError) Error() string {
-	return fmt.Sprintf("crypter: %s", e.Err)
+	return fmt.Sprintf("stdCrypter: %s", e.Err)
 }

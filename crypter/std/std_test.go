@@ -16,14 +16,14 @@ func randomStdCrypter() (*stdCrypter, error) {
 	return New(key[:SymetricKeyLength], key[SymetricKeyLength:])
 }
 
-func TestEncode(t *testing.T) {
+func TestEncodeDecode(t *testing.T) {
 
 	c, err := randomStdCrypter()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	originalbytes := []byte("Test message !@#$%^&*()_1234567890{}[].")
+	originalbytes := []byte("Test message !@#$%^&*()_1234567890{}[]✓.")
 
 	cipherbytes, err := c.EncryptAndSign(originalbytes)
 	if err != nil {
