@@ -30,7 +30,7 @@ func TestEncodeDecode(t *testing.T) {
 		t.Error(err)
 	}
 
-	if bytes.Equal(cipherbytes, originalbytes) {
+	if bytes.Contains(cipherbytes, originalbytes) {
 		t.Error("encoding the bytes didn't work!")
 	}
 
