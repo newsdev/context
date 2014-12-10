@@ -2,15 +2,14 @@ package backend
 
 import (
 	"fmt"
-	"github.com/buth/stocker/backend/etcd"
-	"github.com/buth/stocker/backend/redis"
-	"time"
+
+	"github.com/nytinteractive/context/backend/etcd"
+	"github.com/nytinteractive/context/backend/redis"
 )
 
 type Backend interface {
 	GetVariable(group, variable string) ([]byte, error)
 	SetVariable(group, variable string, value []byte) error
-	SetVariableTTL(group, variable string, value []byte, ttl time.Duration) error
 	RemoveVariable(group, variable string) error
 	GetGroup(group string) (map[string][]byte, error)
 	RemoveGroup(group string) error

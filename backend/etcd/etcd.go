@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/coreos/go-etcd/etcd"
 	"strings"
-	"time"
 )
 
 const (
@@ -61,10 +60,6 @@ func (e *EtcdBackend) setVariable(group, variable string, value []byte, ttl uint
 
 func (e *EtcdBackend) SetVariable(group, variable string, value []byte) error {
 	return e.setVariable(group, variable, value, 0)
-}
-
-func (e *EtcdBackend) SetVariableTTL(group, variable string, value []byte, ttl time.Duration) error {
-	return e.setVariable(group, variable, value, uint64(ttl.Seconds()))
 }
 
 func (e *EtcdBackend) RemoveVariable(group, variable string) error {

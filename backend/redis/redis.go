@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/garyburd/redigo/redis"
 	"log"
-	"time"
 )
 
 const (
@@ -65,11 +64,6 @@ func (r *redisBackend) SetVariable(group, variable string, value []byte) error {
 	// Run the SET command and return any error.
 	_, err := conn.Do("HMSET", r.Key(group), variable, value)
 	return err
-}
-
-// TODO: actual ttl
-func (r *redisBackend) SetVariableTTL(group, variable string, value []byte, ttl time.Duration) error {
-	return r.SetVariable(group, variable, value)
 }
 
 func (r *redisBackend) RemoveVariable(group, variable string) error {
