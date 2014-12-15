@@ -61,6 +61,26 @@ func New(cipherKey, hmacKey []byte) (*stdCrypter, error) {
 	}, nil
 }
 
+func NewRandom() ([]byte, []byte, *stdCrypter, error) {
+
+	symetricKey := make([]byte, SymetricKeyLength)
+	if _, err := io.ReadFull(rand.Reader, symetricKey); err != nil {
+		return nil, nil, nil, err
+	}
+
+	hmacKey := make([]byte, HmacKeyLength)
+	if _, err := io.ReadFull(rand.Reader, hmacKey); err != nil {
+		return nil, nil, nil, err
+	}
+
+	c, err := New(symetricKey, hmacKey)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return symetricKey, hmacKey, c, nil
+}
+
 // hmac computes and returns SHA-512 HMAC sum using the signing key.
 func (c *stdCrypter) hmac(message []byte) []byte {
 	signer := hmac.New(sha512.New, c.hmacKey)

@@ -4,8 +4,16 @@ import (
 	"bytes"
 	"container/list"
 	"encoding/binary"
+	"io"
+
 	"golang.org/x/crypto/ssh"
 )
+
+type Command interface {
+	Run(args []string, env map[string]string, stdout io.Writer) int
+}
+
+type CommandFactory func() (Command, error)
 
 func UnpackMessage(message []byte) ([]string, error) {
 
