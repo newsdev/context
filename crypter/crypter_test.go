@@ -5,11 +5,11 @@ import (
 	"testing"
 )
 
-var kinds = []string{"std"}
+var testKinds = []string{"std"}
 var message = []byte("Test message !@#$%^&*()_1234567890{}[]✓.")
 
 func TestCrypterKeyGeneration(t *testing.T) {
-	for _, kind := range kinds {
+	for _, kind := range testKinds {
 
 		k1, err := NewKey(kind)
 		if err != nil {
@@ -40,7 +40,7 @@ func TestCrypterKeyGeneration(t *testing.T) {
 }
 
 func TestCrypterEncodeDecode(t *testing.T) {
-	for _, kind := range kinds {
+	for _, kind := range testKinds {
 
 		k, err := NewKey(kind)
 		if err != nil {
@@ -78,7 +78,7 @@ func TestCrypterEncodeDecode(t *testing.T) {
 }
 
 func TestCrypterMultipleEncodings(t *testing.T) {
-	for _, kind := range kinds {
+	for _, kind := range testKinds {
 
 		k, err := NewKey(kind)
 		if err != nil {

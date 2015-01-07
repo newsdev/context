@@ -20,7 +20,7 @@ func NewBackend(kind, namespace, protocol, address string) (Backend, error) {
 	// Select a backend based on kind.
 	switch kind {
 	case "etcd":
-		backend := etcd.New(namespace, protocol, address)
+		backend := etcd.New(namespace, address)
 		return backend, nil
 	case "redis":
 		backend := redis.New(namespace, protocol, address)

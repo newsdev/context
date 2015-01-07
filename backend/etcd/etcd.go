@@ -16,7 +16,7 @@ type EtcdBackend struct {
 	client             *etcd.Client
 }
 
-func New(namespace, protocol, address string) *EtcdBackend {
+func New(namespace, address string) *EtcdBackend {
 
 	e := &EtcdBackend{
 		namespace: namespace,
