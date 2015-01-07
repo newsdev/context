@@ -55,6 +55,8 @@ func (s *ExecCommand) Run(args []string) int {
 		return 1
 	}
 
+	// The key should have been saved as a binary, so no extra processing
+	// should be needed.
 	key, err := ioutil.ReadAll(file)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -64,13 +66,14 @@ func (s *ExecCommand) Run(args []string) int {
 		return 1
 	}
 
+	// No need to keep the file open.
 	if err := file.Close(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
 
 	// Use the key to create a new crypter of the given type.
-	crypter, err := crypter.NewCrypter(crypterType, key)
+	c, err := crypter.NewCrypter(crypterType, key)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
@@ -98,7 +101,7 @@ func (s *ExecCommand) Run(args []string) int {
 	templateArgs := make([]string, 0)
 	for variable, encryptedValue := range ecryptedEnv {
 
-		value, err := crypter.ValidateAndDecrypt(encryptedValue)
+		value, err := c.ValidateAndDecrypt(encryptedValue)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			return 1
