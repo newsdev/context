@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/buth/context/command"
 	"github.com/mitchellh/cli"
-	"github.com/nytinteractive/context/command"
 )
 
 const (
@@ -18,6 +18,9 @@ func main() {
 	c.Commands = map[string]cli.CommandFactory{
 		"set": func() (cli.Command, error) {
 			return &command.SetCommand{}, nil
+		},
+		"unset": func() (cli.Command, error) {
+			return &command.UnsetCommand{}, nil
 		},
 		"key": func() (cli.Command, error) {
 			return &command.KeyCommand{}, nil

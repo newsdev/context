@@ -3,8 +3,8 @@ package backend
 import (
 	"fmt"
 
-	"github.com/nytinteractive/context/backend/etcd"
-	"github.com/nytinteractive/context/backend/redis"
+	"github.com/buth/context/backend/etcd"
+	"github.com/buth/context/backend/redis"
 )
 
 type Backend interface {

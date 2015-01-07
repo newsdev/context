@@ -9,8 +9,8 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/nytinteractive/context/backend"
-	"github.com/nytinteractive/context/crypter"
+	"github.com/buth/context/backend"
+	"github.com/buth/context/crypter"
 )
 
 type ExecCommand struct {
@@ -21,13 +21,13 @@ type ExecCommand struct {
 func (s *ExecCommand) Run(args []string) int {
 	var keyPath, group, template, crypterType, backendType, backendProtocol, backendAddress, backendNamespace string
 	flagArgs := flag.NewFlagSet("exec", flag.ContinueOnError)
-	flagArgs.StringVar(&keyPath, "k", "/etc/context/key", "path to a key file")
-	flagArgs.StringVar(&crypterType, "crypter", "std", "crypter to use")
-	flagArgs.StringVar(&backendType, "backend", "etcd", "backend to use")
 	flagArgs.StringVar(&backendAddress, "a", ":4001", "backend address")
 	flagArgs.StringVar(&backendNamespace, "n", "context", "backend namespace prefix")
-	flagArgs.StringVar(&group, "g", "default", "group")
 	flagArgs.StringVar(&backendProtocol, "protocol", "tcp", "backend protocol")
+	flagArgs.StringVar(&backendType, "backend", "etcd", "backend to use")
+	flagArgs.StringVar(&crypterType, "crypter", "std", "crypter to use")
+	flagArgs.StringVar(&group, "g", "default", "group")
+	flagArgs.StringVar(&keyPath, "k", "/etc/context/key", "path to a key file")
 	flagArgs.StringVar(&template, "t", "", "cli template")
 	if err := flagArgs.Parse(args); err != nil {
 		fmt.Fprintln(os.Stderr, err)

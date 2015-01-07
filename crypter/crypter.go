@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/nytinteractive/context/crypter/std"
+	"github.com/buth/context/crypter/std"
 )
 
 type Crypter interface {

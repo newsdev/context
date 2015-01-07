@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	// "github.com/nytinteractive/context/backend"
-	"github.com/nytinteractive/context/crypter"
+	// "github.com/buth/context/backend"
+	"github.com/buth/context/crypter"
 )
 
 type KeyCommand struct {
@@ -17,8 +17,8 @@ type KeyCommand struct {
 func (s *KeyCommand) Run(args []string) int {
 	var keyPath, crypterType string
 	flagArgs := flag.NewFlagSet("key", flag.ContinueOnError)
-	flagArgs.StringVar(&keyPath, "k", "/etc/context/key", "path to save the key file to")
 	flagArgs.StringVar(&crypterType, "crypter", "std", "crypter to use")
+	flagArgs.StringVar(&keyPath, "k", "/etc/context/key", "path to save the key file to")
 	if err := flagArgs.Parse(args); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
