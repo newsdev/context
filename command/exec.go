@@ -13,6 +13,10 @@ import (
 	"github.com/buth/context/crypter"
 )
 
+const (
+	ExecTemplateToken = `{}`
+)
+
 type ExecCommand struct {
 	Group, Addr, PrivateKeyFilepath string
 	UseEnvironment                  bool
@@ -79,26 +83,36 @@ func (s *ExecCommand) Run(args []string) int {
 		return 1
 	}
 
+	// Create a new backend of the given type.
 	b, err := backend.NewBackend(backendType, backendNamespace, backendProtocol, backendAddress)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
 
+	// Get all of the values belonging to this group at once.
 	ecryptedEnv, err := b.GetGroup(group)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
 
+	// We want to use the current environment as a starting point and
+	// overwrite values that are also specified in the encrypted environment.
 	env := make(map[string]string)
 	for _, variable := range os.Environ() {
-		components := strings.Split(variable, "=")
+		components := strings.Split(variable, `=`)
 		env[components[0]] = components[1]
 	}
 
+	// In order to correctly pass templated arguments, the template must be
+	// split along spaces. This doesn't take into account nested strings or
+	// escape sequences, which could be problematic.
+	//
+	// TODO: Better template parsing method.
 	templateSplit := strings.Split(template, ` `)
 	templateArgs := make([]string, 0)
+
 	for variable, encryptedValue := range ecryptedEnv {
 
 		value, err := c.ValidateAndDecrypt(encryptedValue)
@@ -110,28 +124,31 @@ func (s *ExecCommand) Run(args []string) int {
 		env[variable] = string(value)
 
 		for _, templateComponent := range templateSplit {
-			templateArgs = append(templateArgs, strings.Replace(templateComponent, `{}`, variable, -1))
+			templateArgs = append(templateArgs, strings.Replace(templateComponent, ExecTemplateToken, variable, -1))
 		}
 	}
 
-	// Find the expanded path to cmd.
+	// Find the expanded path to the given executable.
 	command, err := exec.LookPath(flagArgs.Arg(0))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
 
+	// Exec expects the environment to be specified as a slice rather than a
+	// map. Flatten it by joining keys and values with `=`.
 	commandEnv := make([]string, 0, len(env))
 	for key, value := range env {
-		commandEnv = append(commandEnv, fmt.Sprintf("%s=%s", key, value))
+		commandEnv = append(commandEnv, fmt.Sprintf(`%s=%s`, key, value))
 	}
 
+	// Replace the template token in the given command argument slice with the
+	// template arguments slice.
 	commandArgs := make([]string, 0)
 	for _, arg := range flagArgs.Args() {
-		if arg == `{}` {
+		if arg == ExecTemplateToken {
 			commandArgs = append(commandArgs, templateArgs...)
 		} else {
-
 			commandArgs = append(commandArgs, arg)
 		}
 	}

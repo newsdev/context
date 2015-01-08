@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	// "github.com/buth/context/backend"
 	"github.com/buth/context/crypter"
 )
 
