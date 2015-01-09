@@ -9,7 +9,7 @@ install:
 	go install
 
 release: $(OSARCH_BIN_GZ) $(OSARCH_BIN_GZ_CHECKSUM)
-	aws s3 sync --dryrun --delete builds s3://newsdev-pub/context/$(VERSION)
+	aws s3 sync --delete builds s3://newsdev-pub/context/$(VERSION)
 
 %.sfv: %
 	shasum -a 512 $^ > $@
