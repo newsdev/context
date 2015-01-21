@@ -104,7 +104,7 @@ func (c *stdCrypter) encrypt(plainbytes []byte) ([]byte, error) {
 func (c *stdCrypter) decrypt(cipherbytes []byte) ([]byte, error) {
 
 	// We need an IV and at least one Block of cipherbytes to proceed.
-	if len(cipherbytes) < aes.BlockSize*2 {
+	if len(cipherbytes) < aes.BlockSize {
 		return []byte{}, stdCrypterError{"cipherbytes is too short"}
 	}
 
