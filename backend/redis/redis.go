@@ -3,8 +3,9 @@ package redis
 import (
 	"bytes"
 	"errors"
-	"github.com/garyburd/redigo/redis"
 	"log"
+
+	"github.com/garyburd/redigo/redis"
 )
 
 const (

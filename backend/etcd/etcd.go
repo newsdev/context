@@ -3,8 +3,9 @@ package etcd
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/coreos/go-etcd/etcd"
 	"strings"
+
+	"github.com/coreos/go-etcd/etcd"
 )
 
 const (
