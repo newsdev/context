@@ -1,39 +1,14 @@
-VERSION=0.0.1
-OSARCH=darwin/amd64 linux/amd64 linux/386
+all: bin/context
 
-OSARCH_BIN=$(OSARCH:%=builds/%/context)
-OSARCH_BIN_GZ=$(OSARCH_BIN:%=%.gz)
-OSARCH_BIN_GZ_CHECKSUM=$(OSARCH_BIN_GZ:%=%.sfv)
+release: bin/context
+	aws s3 cp bin/context s3://newsdev-pub/bin/context
 
-install:
-	go install
+bin/context: bin
+	docker build -t context-build $(CURDIR) && docker run --rm -v $(CURDIR)/bin:/opt/bin context-build cp /go/bin/app /opt/bin/context
 
-release: $(OSARCH_BIN_GZ) $(OSARCH_BIN_GZ_CHECKSUM)
-	aws s3 sync --delete builds s3://newsdev-pub/context/$(VERSION)
-
-%.sfv: %
-	shasum -a 512 $^ > $@
-
-%.gz: %
-	gzip -f -9 $^
-
-$(OSARCH_BIN): builds
-builds:
-	gox -osarch '$(OSARCH)' -output 'builds/{{.OS}}/{{.Arch}}/context'
-
-release-deps: gox deps
-
-gox-toolchain: gox
-	gox -build-toolchain -osarch $(OSARCH)
-
-gox:
-	go get -v github.com/mitchellh/gox
-
-deps:
-	go get -v -d ./...
+bin:
+	mkdir -p bin
 
 clean:
-	rm -rf builds
-
-.PHONY: builds
-.PRECIOUS: %.gz %.sfv
+	rm -rf bin
+	docker rmi context-build || true
