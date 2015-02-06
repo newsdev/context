@@ -5,8 +5,11 @@ import (
 	"testing"
 )
 
-var testKinds = []string{"std"}
-var message = []byte("Test message !@#$%^&*()_1234567890{}[]✓.")
+var (
+	testKinds    = []string{"std"}
+	message      = []byte("Test message !@#$%^&*()_1234567890{}[]✓.")
+	emptyMessage = []byte{}
+)
 
 func TestCrypterKeyGeneration(t *testing.T) {
 	for _, kind := range testKinds {
@@ -72,6 +75,39 @@ func TestCrypterEncodeDecode(t *testing.T) {
 		}
 
 		if !bytes.Equal(plainbytes, message) {
+			t.Errorf("decoded bytes did not match!", message, plainbytes)
+		}
+	}
+}
+
+func TestCrypterEncodeDecodeEmpty(t *testing.T) {
+	for _, kind := range testKinds {
+
+		k, err := NewKey(kind)
+		if err != nil {
+			t.Error(err)
+			continue
+		}
+
+		c, err := NewCrypter(kind, k)
+		if err != nil {
+			t.Error(err)
+			continue
+		}
+
+		cipherbytes, err := c.EncryptAndSign(emptyMessage)
+		if err != nil {
+			t.Error(err)
+			continue
+		}
+
+		plainbytes, err := c.ValidateAndDecrypt(cipherbytes)
+		if err != nil {
+			t.Error(err)
+			continue
+		}
+
+		if !bytes.Equal(plainbytes, emptyMessage) {
 			t.Errorf("decoded bytes did not match!", message, plainbytes)
 		}
 	}
