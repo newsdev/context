@@ -84,7 +84,7 @@ func (s *ExecCommand) Run(args []string) int {
 	}
 
 	// Create a new backend of the given type.
-	b, err := backend.NewBackend(backendType, backendNamespace, backendProtocol, backendAddress)
+	b, err := backend.NewBackend(backendType, backendNamespace, backendAddress)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1

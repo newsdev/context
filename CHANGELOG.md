@@ -1,3 +1,8 @@
+## 0.1.1
+
+* commands fix for incorrect backend constructor
+# upgrade to Go 1.4.2
+
 ## 0.1.0
 
 * fix for writes against non-primary etcd addresses

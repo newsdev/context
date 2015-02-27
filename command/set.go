@@ -73,7 +73,7 @@ func (s *SetCommand) Run(args []string) int {
 		return 1
 	}
 
-	b, err := backend.NewBackend(backendType, backendNamespace, backendProtocol, backendAddress)
+	b, err := backend.NewBackend(backendType, backendNamespace, backendAddress)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
