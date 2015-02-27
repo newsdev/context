@@ -1,4 +1,4 @@
-package etcd
+package backend
 
 import (
 	"encoding/base64"
