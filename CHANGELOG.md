@@ -1,4 +1,4 @@
-## 0.1.0 (unreleased)
+## 0.1.0
 
 * fix for writes against non-primary etcd addresses
 	* switched to an etcdctl-style machines list
