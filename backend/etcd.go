@@ -1,4 +1,4 @@
-package etcd
+package backend
 
 import (
 	"encoding/base64"
@@ -17,19 +17,11 @@ type EtcdBackend struct {
 	client             *etcd.Client
 }
 
-func New(namespace, address string) *EtcdBackend {
-
-	e := &EtcdBackend{
+func NewEtcdBackend(namespace string, machines []string) *EtcdBackend {
+	return &EtcdBackend{
 		namespace: namespace,
-		address:   address,
+		client:    etcd.NewClient(machines),
 	}
-
-	// Build the underlying etcd client.
-	e.client = etcd.NewClient([]string{fmt.Sprintf("http://%s", e.address)})
-	e.client.SyncCluster()
-
-	// Build the Backend object.
-	return e
 }
 
 func key(components ...string) string {
