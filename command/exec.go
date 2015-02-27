@@ -25,7 +25,7 @@ type ExecCommand struct {
 func (s *ExecCommand) Run(args []string) int {
 	var keyPath, group, template, crypterType, backendType, backendProtocol, backendAddress, backendNamespace string
 	flagArgs := flag.NewFlagSet("exec", flag.ContinueOnError)
-	flagArgs.StringVar(&backendAddress, "a", ":4001", "backend address")
+	flagArgs.StringVar(&backendAddress, "a", "http://127.0.0.1:4001", "backend address")
 	flagArgs.StringVar(&backendNamespace, "n", "context", "backend namespace prefix")
 	flagArgs.StringVar(&backendProtocol, "protocol", "tcp", "backend protocol")
 	flagArgs.StringVar(&backendType, "backend", "etcd", "backend to use")

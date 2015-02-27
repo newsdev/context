@@ -6,10 +6,10 @@ import (
 )
 
 var testBackends = []struct {
-	Kind, Namespace, Protocol, Address string
+	Kind, Namespace, Address string
 }{
-	{"redis", "redistest", "tcp", ":6379"},
-	{"etcd", "etcdtest", "tcp", ":4001"},
+	{"redis", "redistest", ":6379"},
+	{"etcd", "etcdtest", "http://127.0.0.1:4001"},
 }
 
 func backendPairs() map[string][]byte {
@@ -24,7 +24,7 @@ func TestBackend(t *testing.T) {
 	testBackendsPairs := backendPairs()
 	for _, b := range testBackends {
 
-		backend, err := NewBackend(b.Kind, b.Namespace, b.Protocol, b.Address)
+		backend, err := NewBackend(b.Kind, b.Namespace, b.Address)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -55,7 +55,7 @@ func TestBackendGetAll(t *testing.T) {
 	testBackendsPairs := backendPairs()
 	for _, b := range testBackends {
 
-		backend, err := NewBackend(b.Kind, b.Namespace, b.Protocol, b.Address)
+		backend, err := NewBackend(b.Kind, b.Namespace, b.Address)
 		if err != nil {
 			t.Fatal(err)
 		}
