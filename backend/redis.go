@@ -14,13 +14,16 @@ const (
 )
 
 type redisBackend struct {
-	namespace, protocol, address string
-	pool                         *redis.Pool
+	namespace, address string
+	pool               *redis.Pool
 }
 
-func NewRedisBackend(namespace, protocol, address string) *redisBackend {
+func NewRedisBackend(namespace, address string) *redisBackend {
 
-	r := &redisBackend{namespace: namespace, protocol: protocol, address: address}
+	r := &redisBackend{
+		namespace: namespace,
+		address:   address,
+	}
 
 	// Build the underlying pool setting the maximum size to the number of
 	// allowed concurrent connections.
@@ -31,7 +34,7 @@ func NewRedisBackend(namespace, protocol, address string) *redisBackend {
 }
 
 func (r *redisBackend) dial() (redis.Conn, error) {
-	connection, err := redis.Dial(r.protocol, r.address)
+	connection, err := redis.Dial("tcp", r.address)
 	if err != nil {
 		log.Println(err)
 		return nil, err
