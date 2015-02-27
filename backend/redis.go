@@ -18,7 +18,7 @@ type redisBackend struct {
 	pool                         *redis.Pool
 }
 
-func New(namespace, protocol, address string) *redisBackend {
+func NewRedisBackend(namespace, protocol, address string) *redisBackend {
 
 	r := &redisBackend{namespace: namespace, protocol: protocol, address: address}
 
