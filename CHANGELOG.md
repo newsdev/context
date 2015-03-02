@@ -1,7 +1,11 @@
+## 0.1.2
+
+* vendored go-etcd to match the etcd 0.4.6 API
+
 ## 0.1.1
 
 * commands fix for incorrect backend constructor
-# upgrade to Go 1.4.2
+* upgrade to Go 1.4.2
 
 ## 0.1.0
 
