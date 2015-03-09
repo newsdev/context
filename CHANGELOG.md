@@ -1,3 +1,7 @@
+## 0.1.3 (unreleased)
+
+* updated import path to prevent download during docker builds
+
 ## 0.1.2
 
 * vendored go-etcd to match the etcd 0.4.6 API
