@@ -85,3 +85,17 @@ func TestBackendGetAll(t *testing.T) {
 		}
 	}
 }
+
+func TestBackendGetEmptyGroup(t *testing.T) {
+	for _, b := range testBackends {
+		backend, err := NewBackend(b.Kind, b.Namespace, b.Address)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if _, err := backend.GetGroup("testgroup"); err != nil {
+			t.Fatal(err)
+		}
+
+	}
+}
