@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/buth/context/vendor/src/github.com/coreos/go-etcd/etcd"
+	"github.com/newsdev/context/vendor/src/github.com/coreos/go-etcd/etcd"
 )
 
 const (
@@ -63,8 +63,12 @@ func (e *EtcdBackend) RemoveVariable(group, variable string) error {
 func (e *EtcdBackend) GetGroup(group string) (map[string][]byte, error) {
 	key := e.keyGroup(group)
 	response, err := e.client.Get(key, false, true)
+
+	// check if this is a missing key
 	if err != nil {
-		return nil, err
+		if etcdErr, ok := err.(*etcd.EtcdError); ok && etcdErr.ErrorCode == 100 {
+			return make(map[string][]byte), nil
+		}
 	}
 
 	prefix := fmt.Sprintf("/%s/", key)

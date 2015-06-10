@@ -43,11 +43,24 @@ func TestBackend(t *testing.T) {
 			} else if !bytes.Equal(v, value) {
 				t.Errorf("expected value %s for %s but found %s!", value, variable, v)
 			}
+
+			if err := backend.RemoveVariable("testgroup", variable); err != nil {
+				t.Error(err)
+			}
+
+			g, err := backend.GetGroup("testgroup")
+			if err != nil {
+				t.Error(err)
+			}
+			if _, ok := g[variable]; ok {
+				t.Errorf("removed variable %s is still present!", variable)
+			}
 		}
 
 		if err := backend.RemoveGroup("testgroup"); err != nil {
 			t.Fatal(err)
 		}
+
 	}
 }
 
@@ -83,5 +96,19 @@ func TestBackendGetAll(t *testing.T) {
 		if err := backend.RemoveGroup("testgroup"); err != nil {
 			t.Fatal(err)
 		}
+	}
+}
+
+func TestBackendGetEmptyGroup(t *testing.T) {
+	for _, b := range testBackends {
+		backend, err := NewBackend(b.Kind, b.Namespace, b.Address)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if _, err := backend.GetGroup("testgroup"); err != nil {
+			t.Fatal(err)
+		}
+
 	}
 }

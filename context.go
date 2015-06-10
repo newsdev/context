@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/buth/context/command"
 	"github.com/mitchellh/cli"
+	"github.com/newsdev/context/command"
 )
 
 const (
