@@ -1,4 +1,4 @@
-## 0.1.3 (unreleased)
+## 0.1.3
 
 * updated import path to prevent download during docker builds
 * moved repository to newsdev
