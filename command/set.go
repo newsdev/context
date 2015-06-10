@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"code.google.com/p/gopass"
-	"github.com/buth/context/backend"
-	"github.com/buth/context/crypter"
+	"github.com/newsdev/context/backend"
+	"github.com/newsdev/context/crypter"
 )
 
 type SetCommand struct {

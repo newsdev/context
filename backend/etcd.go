@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/buth/context/vendor/src/github.com/coreos/go-etcd/etcd"
+	"github.com/newsdev/context/vendor/src/github.com/coreos/go-etcd/etcd"
 )
 
 const (

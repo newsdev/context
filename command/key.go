@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/buth/context/crypter"
+	"github.com/newsdev/context/crypter"
 )
 
 type KeyCommand struct {

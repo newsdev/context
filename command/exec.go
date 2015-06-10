@@ -9,8 +9,8 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/buth/context/backend"
-	"github.com/buth/context/crypter"
+	"github.com/newsdev/context/backend"
+	"github.com/newsdev/context/crypter"
 )
 
 const (

@@ -5,15 +5,16 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/buth/context/backend"
+	"github.com/newsdev/context/backend"
 )
 
 type UnsetCommand struct{}
 
 func (s *UnsetCommand) Run(args []string) int {
+
 	var group, backendType, backendProtocol, backendAddress, backendNamespace string
 	flagArgs := flag.NewFlagSet("unset", flag.ContinueOnError)
-	flagArgs.StringVar(&backendAddress, "a", ":4001", "backend address")
+	flagArgs.StringVar(&backendAddress, "a", "http://127.0.0.1:4001", "backend address")
 	flagArgs.StringVar(&backendNamespace, "n", "context", "backend namespace prefix")
 	flagArgs.StringVar(&backendProtocol, "protocol", "tcp", "backend protocol")
 	flagArgs.StringVar(&backendType, "backend", "etcd", "backend to use")
