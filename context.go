@@ -1,4 +1,4 @@
-package main // import "github.com/buth/context"
+package main // import "github.com/newsdev/context"
 
 import (
 	"log"
