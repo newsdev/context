@@ -44,7 +44,7 @@ Docker requires that environment variables that are to be passed from the execut
 Context provides a templating mechanism to solve this problem. Using the `-t` flag you can specify that you would like the template token, `{}`, to be replaced in the specified command with a pattern that is resolved for every variable in the group environment.
 
 ```
-$ context exec -g myGroup -t '-e {}' docker run '{}' debian env | sort
+$ context exec -g myGroup -t '-e {}' docker run {} debian env | sort
 A=1
 B=2
 C=3

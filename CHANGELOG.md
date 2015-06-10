@@ -1,3 +1,7 @@
+## 0.1.3 (unreleased)
+
+* fixed an error that occurred when no keys were set for a group
+
 ## 0.1.2
 
 * vendored go-etcd to match the etcd 0.4.6 API
