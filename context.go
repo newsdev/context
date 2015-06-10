@@ -1,4 +1,4 @@
-package main
+package main // import "github.com/newsdev/context"
 
 import (
 	"log"
@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	Version = "0.1.2"
+	Version = "0.1.3"
 )
 
 func main() {

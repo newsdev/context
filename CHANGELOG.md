@@ -1,5 +1,6 @@
-## 0.1.3 (unreleased)
+## 0.1.3
 
+* updated import path to prevent download during docker builds
 * moved repository to newsdev
 * fixed an error that occurred when no keys were set for a group
 * fixed incorrect etcd address default for unset command
