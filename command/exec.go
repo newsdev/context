@@ -161,6 +161,6 @@ func (s *ExecCommand) Run(args []string) int {
 	return 0
 }
 
-func (s *ExecCommand) Help() string { return "" }
+func (s *ExecCommand) Help() string { return "context exec -g [GROUP_NAME] command Overwrite values in the current environment with values from the group environment for the execution of a single specified command." }
 
 func (s *ExecCommand) Synopsis() string { return "" }

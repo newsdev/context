@@ -111,6 +111,6 @@ func (s *SetCommand) Run(args []string) int {
 	return 0
 }
 
-func (s *SetCommand) Help() string { return "" }
+func (s *SetCommand) Help() string { return "Set a list of space separated [...VAR_NAMES...]. context will prompt for the value of each." }
 
 func (s *SetCommand) Synopsis() string { return "" }

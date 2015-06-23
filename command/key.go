@@ -57,6 +57,6 @@ func (s *KeyCommand) Run(args []string) int {
 	return 0
 }
 
-func (s *KeyCommand) Help() string { return "" }
+func (s *KeyCommand) Help() string { return "Resets the etcd encryption key. Don't run this unless you're really sure you want to as it will break all existing values that have been set." }
 
 func (s *KeyCommand) Synopsis() string { return "" }
